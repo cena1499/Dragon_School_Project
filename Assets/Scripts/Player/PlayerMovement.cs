@@ -14,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D boxCollider;
     private float wallJumpCooldown;
     private float horizontalInput;
+
+    [Header("SFX")]
+    [SerializeField] private AudioClip jumpSound;
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
@@ -38,7 +42,6 @@ public class PlayerMovement : MonoBehaviour
 
         //Øešení odskoku od zdi
         if(wallJumpCooldown > 0.2f)
-        //if (wallJumpCooldown < 0.2f)
         {
             body.velocity = new Vector3(horizontalInput * speed, body.velocity.y);
 
@@ -53,7 +56,14 @@ public class PlayerMovement : MonoBehaviour
             }
 
             if (Input.GetKey(KeyCode.Space))
+            {
                 Jump();
+
+                if(Input.GetKeyDown(KeyCode.Space) && isGrouded())
+                {
+                    SoundManager.instance.PlaySound(jumpSound);
+                }
+            }
         }
         else
         {
@@ -65,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(isGrouded())
         {
+            SoundManager.instance.PlaySound(jumpSound);
             body.velocity = new Vector2(body.velocity.x, jumpPower);
             anim.SetTrigger("jump");
         }
